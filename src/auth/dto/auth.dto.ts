@@ -29,7 +29,6 @@ export class UpdateUserDto {
   @ApiProperty({
     description: 'The new name of the user',
     type: String,
-    required: false,
   })
   @IsString()
   newUsername: string;

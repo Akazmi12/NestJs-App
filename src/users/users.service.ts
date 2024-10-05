@@ -26,10 +26,13 @@ export class UsersService {
     username: string,
     newUsername: string,
   ): Promise<User | undefined> {
-    return this.users.find((user) => {
-      if (user.username === username) {
-        user.username = newUsername;
-      }
-    });
+    const user = this.users.find((user) => user.username === username);
+
+    if (user) {
+      user.username = newUsername;
+      return user;
+    }
+
+    return undefined;
   }
 }

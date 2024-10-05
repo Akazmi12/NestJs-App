@@ -8,6 +8,7 @@ import {
   Get,
   Request,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
@@ -17,12 +18,16 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { LoginUserDto } from './dto/auth.dto';
+import { LoginUserDto, UpdateUserDto } from './dto/auth.dto';
+import { UsersService } from 'src/users/users.service';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UsersService,
+  ) {}
 
   @UseGuards(AuthGuard)
   @Get('get-profile')
@@ -44,6 +49,7 @@ export class AuthController {
     return this.authService.signIn(signInDto.username, signInDto.password);
   }
 
+  @UseGuards(AuthGuard)
   @Patch('update-profile')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update user profile' })
@@ -51,7 +57,22 @@ export class AuthController {
     status: 200,
     description: 'User profile updated successfully.',
   })
-  updateProfile(@Body() signInDto: LoginUserDto) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  updateProfile(@Body() signInDto: UpdateUserDto) {
+    return this.userService.updateUser(
+      signInDto.username,
+      signInDto.newUsername,
+    );
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('delete-profile')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Deleted user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile deleted successfully.',
+  })
+  deleteProfile() {
+    return true;
   }
 }
